@@ -1,25 +1,43 @@
-[gd_scene load_steps=5 format=3 uid="uid://dlww8m5x1c2tv"]
+[gd_scene load_steps=8 format=3 uid="uid://dlww8m5x1c2tv"]
 
 [ext_resource type="Script" uid="uid://ddhxamlwfsqpv" path="res://landscape.gd" id="1_asa4r"]
 [ext_resource type="Script" uid="uid://cb4eam8v584o8" path="res://camera_3d.gd" id="2_6vom0"]
 [ext_resource type="Script" uid="uid://bea5ayor5a7oq" path="res://path_3d.gd" id="3_425dq"]
+[ext_resource type="Script" uid="uid://clo6li4hkenr5" path="res://car.gd" id="4_6vom0"]
+[ext_resource type="Script" uid="uid://c6cc0oihya8bs" path="res://car_camera.gd" id="5_425dq"]
 
 [sub_resource type="Curve3D" id="Curve3D_jwi71"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_425dq"]
+size = Vector3(14, 3, 200)
 
 [node name="Landscape" type="Node3D"]
 script = ExtResource("1_asa4r")
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.906308, 0.422618, 0, -0.422618, 0.906308, 0, 40, 80)
-fov = 70.0
+transform = Transform3D(1, 0, 0, 0, 0.939693, 0.34202, 0, -0.34202, 0.939693, -110, 70, 270)
+current = true
 far = 1000.0
 script = ExtResource("2_6vom0")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.707107, -0.612372, 0.353553, 0, 0.5, 0.866025, -0.707107, -0.612372, 0.353553, -45, 45, 0)
+transform = Transform3D(0.707107, -0.5, 0.5, 0, 0.707106, 0.707106, -0.707107, -0.5, 0.5, -45, 45, 0)
 light_energy = 8.0
 light_indirect_energy = 3.0
 
 [node name="Path3D" type="Path3D" parent="."]
 curve = SubResource("Curve3D_jwi71")
 script = ExtResource("3_425dq")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Path3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Path3D/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 37, 0)
+shape = SubResource("BoxShape3D_425dq")
+
+[node name="Car" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -110, 150, 200)
+script = ExtResource("4_6vom0")
+
+[node name="carCamera" type="Camera3D" parent="Car"]
+script = ExtResource("5_425dq")

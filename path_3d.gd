@@ -51,7 +51,6 @@ func _ready():
 		st.add_vertex(v1)
 
 	st.generate_normals()
-	st.index()
 	var mesh = st.commit()
 
 	var road = MeshInstance3D.new()
@@ -67,28 +66,20 @@ func _ready():
 
 	print("✅ Road built successfully.")
 
-	# === 3️⃣ Add flag ===
+	# === ✅ Add collision so the car raycast can hit it ===
+	var static_body = StaticBody3D.new()
+	var collision = CollisionShape3D.new()
+	collision.shape = mesh.create_trimesh_shape()
+	static_body.add_child(collision)
+	add_child(static_body)
+	print("✅ Collision added for road.")
+
+	# === 🚩 Flag ===
 	var flag_base_pos = curve.get_point_position(segment_count - 1)
-
-	# 🪜 Pole
-	var pole = MeshInstance3D.new()
-	var pole_mesh = CylinderMesh.new()
-	pole_mesh.height = 12.0
-	pole_mesh.top_radius = 0.15
-	pole_mesh.bottom_radius = 0.15
-	pole.mesh = pole_mesh
-	pole.position = flag_base_pos + Vector3(0, 6, 0)
-
-	var pole_mat = StandardMaterial3D.new()
-	pole_mat.albedo_color = Color(0.2, 0.2, 0.2)
-	pole.set_surface_override_material(0, pole_mat)
-	add_child(pole)
-
-	# 🚩 Flag (unshaded, glowing, always visible)
+	var flag_mesh = PlaneMesh.new()
+	flag_mesh.size = Vector2(5, 3)
 	flag_mesh_instance = MeshInstance3D.new()
-	var plane = PlaneMesh.new()
-	plane.size = Vector2(5, 3)
-	flag_mesh_instance.mesh = plane
+	flag_mesh_instance.mesh = flag_mesh
 	flag_mesh_instance.position = flag_base_pos + Vector3(2.5, 9.0, 0)
 	flag_mesh_instance.rotation_degrees = Vector3(0, -90, 0)
 
@@ -96,18 +87,9 @@ func _ready():
 	flag_mat.albedo_color = Color(1, 0, 0)
 	flag_mat.emission_enabled = true
 	flag_mat.emission = Color(1, 0, 0)
-	flag_mat.emission_energy = 4.0
-	flag_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
-	flag_mat.unshaded = true                  # ✅ Ignore scene light & fog
-	flag_mat.disable_ambient_light = true     # ✅ Keep it pure red
+	flag_mat.emission_energy = 3.0
+	flag_mat.unshaded = true
 	flag_mesh_instance.set_surface_override_material(0, flag_mat)
 	add_child(flag_mesh_instance)
 
 	print("🏁 Bright red flag added — unshaded & visible in all lighting!")
-
-
-func _process(delta):
-	# 🌬 Simple waving animation
-	if flag_mesh_instance:
-		var t = Time.get_ticks_msec() / 1000.0
-		flag_mesh_instance.rotation_degrees.z = sin(t * 3.0) * 5.0
