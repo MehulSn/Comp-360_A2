@@ -10,11 +10,7 @@ config_version=5
 
 [application]
 
-config/name="Assignment1_group2"
-run/main_scene="uid://dmp343w5fip3l"
+config/name="New Game Project"
+run/main_scene="uid://dlww8m5x1c2tv"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
-
-[rendering]
-
-environment/defaults/default_clear_color=Color(0.756863, 0.772549, 0.807843, 1)

@@ -1,21 +1,25 @@
-[gd_scene load_steps=2 format=3 uid="uid://dmp343w5fip3l"]
+[gd_scene load_steps=5 format=3 uid="uid://dlww8m5x1c2tv"]
 
-[ext_resource type="Script" uid="uid://h0hk44p74u4b" path="res://Landscape.gd" id="1_8vpcf"]
+[ext_resource type="Script" uid="uid://ddhxamlwfsqpv" path="res://landscape.gd" id="1_asa4r"]
+[ext_resource type="Script" uid="uid://cb4eam8v584o8" path="res://camera_3d.gd" id="2_6vom0"]
+[ext_resource type="Script" uid="uid://bea5ayor5a7oq" path="res://path_3d.gd" id="3_425dq"]
+
+[sub_resource type="Curve3D" id="Curve3D_jwi71"]
 
 [node name="Landscape" type="Node3D"]
-script = ExtResource("1_8vpcf")
+script = ExtResource("1_asa4r")
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.906308, 0.422618, 0, -0.422618, 0.906308, 0, 40, 80)
-current = true
 fov = 70.0
 far = 1000.0
+script = ExtResource("2_6vom0")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.707106, -0.612372, 0.353553, 0, 0.5, 0.866025, -0.707106, -0.612372, 0.353553, -45, 45, 0)
-light_color = Color(0.977937, 0.977937, 0.977937, 1)
+transform = Transform3D(0.707107, -0.612372, 0.353553, 0, 0.5, 0.866025, -0.707107, -0.612372, 0.353553, -45, 45, 0)
 light_energy = 8.0
 light_indirect_energy = 3.0
-light_negative = true
-light_bake_mode = 0
-shadow_opacity = 0.5
+
+[node name="Path3D" type="Path3D" parent="."]
+curve = SubResource("Curve3D_jwi71")
+script = ExtResource("3_425dq")

@@ -203,4 +203,4 @@ func _ready():
 	add_child(flag)
 
 	print("🏔 Flag placed on tallest mountain:", highest_pos)
-	print("✅ Landscape generated successfully!")  
+	print("✅ Landscape generated successfully!")
