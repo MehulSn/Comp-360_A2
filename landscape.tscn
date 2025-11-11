@@ -16,7 +16,6 @@ script = ExtResource("1_asa4r")
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.939693, 0.34202, 0, -0.34202, 0.939693, -110, 70, 270)
-current = true
 far = 1000.0
 script = ExtResource("2_6vom0")
 
@@ -39,5 +38,6 @@ shape = SubResource("BoxShape3D_425dq")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -110, 150, 200)
 script = ExtResource("4_6vom0")
 
-[node name="carCamera" type="Camera3D" parent="Car"]
+[node name="carCamera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -110, 150, 200)
 script = ExtResource("5_425dq")
