@@ -1,15 +1,22 @@
-[gd_scene load_steps=8 format=3 uid="uid://dlww8m5x1c2tv"]
+[gd_scene load_steps=10 format=3 uid="uid://dlww8m5x1c2tv"]
 
 [ext_resource type="Script" uid="uid://ddhxamlwfsqpv" path="res://landscape.gd" id="1_asa4r"]
 [ext_resource type="Script" uid="uid://bea5ayor5a7oq" path="res://path_3d.gd" id="3_425dq"]
 [ext_resource type="Script" uid="uid://clo6li4hkenr5" path="res://car.gd" id="4_6vom0"]
 [ext_resource type="Script" uid="uid://c6cc0oihya8bs" path="res://car_camera.gd" id="5_425dq"]
-[ext_resource type="Script" uid="uid://cuo853c84h7mc" path="res://GameManager.gd" id="5_jwi71"]
+[ext_resource type="Script" uid="uid://duxc2ffqiqy3j" path="res://gate.gd" id="5_jwi71"]
 
 [sub_resource type="Curve3D" id="Curve3D_jwi71"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_425dq"]
 size = Vector3(14, 3, 200)
+
+[sub_resource type="BoxMesh" id="BoxMesh_6vom0"]
+size = Vector3(8, 3, 0.5)
+subdivide_height = 2
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_jwi71"]
+size = Vector3(8, 3, 0.5)
 
 [node name="Landscape" type="Node3D"]
 script = ExtResource("1_asa4r")
@@ -33,13 +40,35 @@ shape = SubResource("BoxShape3D_425dq")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 script = ExtResource("4_6vom0")
 
+[node name="Headlight_L" type="SpotLight3D" parent="Car"]
+transform = Transform3D(1, 0, 0, 0, 0.984808, 0.173648, 0, -0.173648, 0.984808, -0.8, 0.5, -2.2)
+light_color = Color(1, 0.956863, 0.8, 1)
+light_energy = 6.0
+shadow_enabled = true
+spot_range = 60.0
+spot_angle = 70.0
+
+[node name="Headlight_R" type="SpotLight3D" parent="Car"]
+transform = Transform3D(1, 0, 0, 0, 0.984808, 0.173648, 0, -0.173648, 0.984808, 0.8, 0.5, -2.2)
+light_color = Color(1, 0.956863, 0.8, 1)
+light_energy = 6.0
+shadow_enabled = true
+spot_range = 60.0
+spot_attenuation = 70.0
+spot_angle = 60.0
+
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 15)
 script = ExtResource("5_425dq")
 smooth_speed = 10.0
 
-[node name="Game" type="Node" parent="."]
+[node name="Gate" type="Node3D" parent="."]
 script = ExtResource("5_jwi71")
 car_path = NodePath("../Car")
 
-[node name="UI" type="CanvasLayer" parent="."]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Gate"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+mesh = SubResource("BoxMesh_6vom0")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Gate"]
+shape = SubResource("BoxShape3D_jwi71")

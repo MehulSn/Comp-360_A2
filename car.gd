@@ -2,6 +2,9 @@ extends MeshInstance3D
 
 var speed := 45.0
 var turn_speed := 4.0
+@onready var headlight_l = $Headlight_L
+@onready var headlight_r = $Headlight_R
+var headlights_on = false
 
 func _ready():
 	print("🚗 Reversed-direction car ready!")
@@ -130,6 +133,29 @@ func _ready():
 		lower_light.shadow_enabled = true
 		lower_light.position = Vector3(i * 0.8, -0.25, 2.1)  # 🔽 lower match
 		add_child(lower_light)
+		
+		# === Headlights ===
+		# === HEADLIGHTS (REAL BEAMS) ===
+	# === HEADLIGHTS (REAL BEAMS) ===
+	headlight_l = SpotLight3D.new()
+	headlight_l.light_energy = 9.0
+	headlight_l.spot_angle = 65
+	headlight_l.spot_range = 85
+	headlight_l.position = Vector3(-1.8, 1.6, 3.6)
+	headlight_l.rotation_degrees = Vector3(-8, 0, 0)
+	headlight_l.visible = false
+	add_child(headlight_l)
+
+	headlight_r = SpotLight3D.new()
+	headlight_r.light_energy = 9.0
+	headlight_r.spot_angle = 65
+	headlight_r.spot_range = 85
+	headlight_r.position = Vector3(0.8, 0.5, 3.1)
+	headlight_r.rotation_degrees = Vector3(-8, 0, 0)
+	headlight_r.visible = false
+	add_child(headlight_r)
+
+
 # === MOVEMENT ===
 func _process(delta):
 	# === 1️⃣ TURNING ===
@@ -162,3 +188,9 @@ func _process(delta):
 	elif Input.is_action_pressed("s") or Input.is_action_pressed("ui_down"):
 		target_tilt = 0.03
 	rotation.x = lerp(rotation.x, target_tilt, delta * 4.0)
+
+	if Input.is_action_just_pressed("HeadlightToggle"):
+		headlights_on = not headlights_on
+		headlight_l.visible = headlights_on
+		headlight_r.visible = headlights_on
+		print("💡 Headlights:", headlights_on)
