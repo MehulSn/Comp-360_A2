@@ -1,13 +1,13 @@
 extends MeshInstance3D
 
-var speed := 24.0
-var turn_speed := 2.0
+var speed := 45.0
+var turn_speed := 4.0
 
 func _ready():
 	print("🚗 Reversed-direction car ready!")
 
 	# ✅ Keep the same perfect road position
-	global_position = Vector3(3, 38, 90)
+	global_position = Vector3(3, 7, 90)
 
 	# === MAIN BODY ===
 	var body = BoxMesh.new()
@@ -55,42 +55,110 @@ func _ready():
 			wheel.set_surface_override_material(0, wheel_mat)
 			add_child(wheel)
 
-	# === LIGHTS (now reversed) ===
-	# Rear lights become front lights
+		# === SMALL WHITE LIGHT DOTS (visible bulbs) ===
+	for i in [-1, 1]:
+		var bulb = MeshInstance3D.new()
+		var sphere = SphereMesh.new()
+		sphere.radius = 0.12
+		sphere.height = 0.12
+		bulb.mesh = sphere
+		bulb.position = Vector3(i * 0.6, 0.3, -3.1)
+		
+		var bulb_mat = StandardMaterial3D.new()
+		bulb_mat.albedo_color = Color(1, 1, 1)
+		bulb_mat.emission_enabled = true
+		bulb_mat.emission = Color(1, 1, 1)
+		bulb_mat.emission_energy = 6.0  # makes it glow even in daylight
+		bulb.set_surface_override_material(0, bulb_mat)
+		
+		add_child(bulb)
+
 	for i in [-1, 1]:
 		var light = OmniLight3D.new()
-		light.light_energy = 1.5
-		light.light_color = Color(1, 1, 0.8)
-		light.position = Vector3(i * 0.8, 0.4, -2.7)  # 🔁 moved to new front (back side)
+		light.light_energy = 12.0                     # 💡 much brighter
+		light.light_color = Color(1, 1, 0.7)          # warm white
+		light.omni_range = 80                         # huge range so it hits road
+		light.shadow_enabled = true
+		light.position = Vector3(i * 0.6, 0.3, -3.1)  # right in front corners
 		add_child(light)
-
-	# New rear lights on opposite end
+		
+		
+	# === REAR LIGHTS (red bulbs + glow) ===
+	for i in [-1, 1]:
+		var rear_bulb = MeshInstance3D.new()
+		var sphere = SphereMesh.new()
+		sphere.radius = 0.12
+		sphere.height = 0.12
+		rear_bulb.mesh = sphere
+		rear_bulb.position = Vector3(i * 0.8, 0.3, 2.1)   # ✅ symmetric to front
+		var rear_bulb_mat = StandardMaterial3D.new()
+		rear_bulb_mat.albedo_color = Color(1, 0, 0)
+		rear_bulb_mat.emission_enabled = true
+		rear_bulb_mat.emission = Color(1, 1,1)
+		rear_bulb_mat.emission_energy = 6.0
+		rear_bulb.set_surface_override_material(0, rear_bulb_mat)
+		add_child(rear_bulb)
+		# === REAR LIGHTS ===
 	for i in [-1, 1]:
 		var rear_light = OmniLight3D.new()
-		rear_light.light_energy = 1.0
-		rear_light.light_color = Color(1, 0, 0)
-		rear_light.position = Vector3(i * 0.8, 0.4, 2.2)
+		rear_light.light_energy = 9.0                 
+		rear_light.light_color = Color(1, 1, 1)
+		rear_light.omni_range = 60
+		rear_light.shadow_enabled = true
+		rear_light.position = Vector3(i * 0.8, 0.3, 2.1)
 		add_child(rear_light)
+	for i in [-1, 1]:
+		var lower_bulb = MeshInstance3D.new()
+		var sphere2 = SphereMesh.new()
+		sphere2.radius = 0.12
+		sphere2.height = 0.12
+		lower_bulb.mesh = sphere2
+		lower_bulb.position = Vector3(i * 0.8, -0.25, 2.1)   # 🔽 lower by 0.25 on Y
+		var lower_mat = StandardMaterial3D.new()
+		lower_mat.albedo_color = Color(1, 0, 0)
+		lower_mat.emission_enabled = true
+		lower_mat.emission = Color(1, 1,1)
+		lower_mat.emission_energy = 6.0
+		lower_bulb.set_surface_override_material(0, lower_mat)
+		add_child(lower_bulb)
 
-
+	for i in [-1, 1]:
+		var lower_light = OmniLight3D.new()
+		lower_light.light_energy = 9.0
+		lower_light.light_color = Color(1, 1,1)
+		lower_light.omni_range = 60
+		lower_light.shadow_enabled = true
+		lower_light.position = Vector3(i * 0.8, -0.25, 2.1)  # 🔽 lower match
+		add_child(lower_light)
 # === MOVEMENT ===
 func _process(delta):
-	# Handle turning (rotation in Y)
+	# === 1️⃣ TURNING ===
 	if Input.is_action_pressed("a") or Input.is_action_pressed("ui_left"):
 		rotation.y += turn_speed * delta
 	if Input.is_action_pressed("d") or Input.is_action_pressed("ui_right"):
 		rotation.y -= turn_speed * delta
 
-	# Calculate forward direction
-	var forward = -transform.basis.z.normalized()  # 🔥 This is the correct visual forward axis
-
+	# === 2️⃣ MOVEMENT ===
+	var forward = -transform.basis.z.normalized()
 	var move = Vector3.ZERO
 
-	# Move along car's facing direction
 	if Input.is_action_pressed("w") or Input.is_action_pressed("ui_up"):
-		move += forward * speed * delta     # Move forward (in visual front)
+		move += forward * speed * delta
 	if Input.is_action_pressed("s") or Input.is_action_pressed("ui_down"):
-		move -= forward * (speed * 0.6) * delta  # Move backward
+		move -= forward * (speed * 0.5) * delta
 
-	# Apply translation
-	global_position += move
+	global_position += move   # ✅ keeps your car visible & moving correctly
+
+	# === 3️⃣ Y-HEIGHT CORRECTION (fake gravity but stable) ===
+	if global_position.y > 7.5:
+		global_position.y -= 2.0 * delta  # gently pull it down
+	elif global_position.y < 7.0:
+		global_position.y += 1.0 * delta  # stop from sinking
+
+	# === 4️⃣ TILT EFFECT ===
+	var target_tilt = 0.0
+	if Input.is_action_pressed("w") or Input.is_action_pressed("ui_up"):
+		target_tilt = -0.03
+	elif Input.is_action_pressed("s") or Input.is_action_pressed("ui_down"):
+		target_tilt = 0.03
+	rotation.x = lerp(rotation.x, target_tilt, delta * 4.0)

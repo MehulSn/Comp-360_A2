@@ -4,6 +4,7 @@ extends Camera3D
 @export var follow_distance := 25.0
 @export var height := 10.0
 @export var smooth_speed := 6.0
+@export var camera_tilt := -10.0   # 🎥 NEW: small downward tilt for realism
 
 func _ready() -> void:
 	# Try to find the car automatically if not assigned
@@ -12,6 +13,9 @@ func _ready() -> void:
 
 	# Make sure THIS camera becomes the active one
 	make_current()
+
+	# ✅ Tilt camera slightly down for cinematic look
+	rotation_degrees.x = camera_tilt
 
 	# Debug info
 	var active_cam = get_viewport().get_camera_3d()
@@ -27,12 +31,15 @@ func _process(delta: float) -> void:
 		make_current()
 
 	if target:
+		# Calculate the forward direction of the car
+		var car_forward = -target.global_transform.basis.z.normalized()
+
 		# Place the camera behind and above the car
-		var desired = target.global_position + target.global_transform.basis.z * follow_distance
+		var desired = target.global_position - car_forward * follow_distance
 		desired.y += height
 
-		# Smoothly move the camera
+		# ✅ Smoothly move the camera (more polished)
 		global_position = global_position.lerp(desired, delta * smooth_speed)
 
-		# Always look at the car slightly above its center
+		# ✅ Look at car slightly above its center
 		look_at(target.global_position + Vector3(0, 2, 0), Vector3.UP)

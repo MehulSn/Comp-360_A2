@@ -17,7 +17,7 @@ func _ready():
 	var st = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 
-	var size = 200   
+	var size = 1000  
 	var step = 1.0
 	var height = 12.0
 
